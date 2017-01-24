@@ -1,0 +1,27 @@
+{
+    "name":"Trivia Crack Auto Card Clicker",
+    "version":"1.0",
+    "description":"Mod for Trivia Crack that auto-clicks cards for you.",
+    "manifest_version": 2,
+    "incognito": "spanning",
+    "icons": {
+        "16": "images/icons/icon16.png",
+        "48": "images/icons/icon48.png",
+        "128": "images/icons/icon.png"
+    },
+    "content_scripts":[{
+        "all_frames": true,
+        "matches":[
+            "*://*.preguntados.com/*"
+        ],
+        "js": ["jquery-3.1.1.js", "TriviaCrackApi.js", "Main.js"],
+        "run_at":"document_end"
+    }],
+    "page_action":{
+        "default_title": "Trivia Crack Auto Card Activator"
+    },
+    "permissions": [
+        "identity",
+        "*://*.preguntados.com/*"
+    ]
+}
