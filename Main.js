@@ -1,6 +1,18 @@
 let userID = null;
 let nextActivationDate = null;
+let nextPageReloadDate = null;
 let activationIntervalId = null;
+
+function reloadPage() {
+    // If the next card activation is going to happen in the next 30 seconds
+    // hold off on reloading the page for another minute, otherwise do it now
+    if (nextActivationDate.getTime() > Date.now() - 30 * 1000) {
+        location.reload();
+    } else {
+        setTimeout(reloadPage, 60 * 1000);
+        nextPageReloadDate = new Date(Date.now() + 60 * 1000);
+    }
+}
 
 function setup() {
     updateTriviaCrackUserId(() => {
@@ -8,6 +20,12 @@ function setup() {
             setTimeout(setup, 5000);
         } else {
             activationIntervalId = setInterval(checkAndActivateCards, 1000);
+
+            // Reload the page in an hour.
+            // This is an attempt to fight the out of memory errors we get when we leave the tab
+            // open for a really long time.
+            setTimeout(reloadPage, 60 * 60 * 1000);
+            nextPageReloadDate = new Date(Date.now() + 60 * 60 * 1000);
         }
     });
 }
@@ -72,15 +90,27 @@ function tryDisplayNextActivationDate() {
     if (cardsGroup.length == 0) {
         return;
     }
-    let dateStr = formatDate(nextActivationDate);
+    let nextActivationDateStr = formatDate(nextActivationDate);
+    let nextPageReloadDateStr = formatDate(nextPageReloadDate);
     let dateSpan = $("#next-activate-date");
+    let reloadSpan = $("#next-reload-date");
     if (dateSpan.length == 0) {
-        let p = $(`<p>Next card activation: <span id="next-activate-date">${dateStr}</span></p>`);
-        p.css("color", "#33c1ae");
-        p.css("text-align", "center");
-        cardsGroup.after(p);
+        let div = $("<div></div>");
+
+        let activationDateElement = $(`<p>Next card activation: <span id="next-activate-date">${nextActivationDateStr}</span></p>`);
+        activationDateElement.css("color", "#33c1ae");
+        activationDateElement.css("text-align", "center");
+        div.append(activationDateElement);
+
+        let pageReloadElement = $(`<p>Next page reload: <span id="next-page-reload">${nextPageReloadDateStr}</span></p>`);
+        pageReloadElement.css("color", "#33c1ae");
+        pageReloadElement.css("text-align", "center");
+        div.append(pageReloadElement);
+
+        cardsGroup.after(div);
     } else {
-        dateSpan.html(dateStr);
+        dateSpan.html(nextActivationDateStr);
+        reloadSpan.html(nextPageReloadDateStr);
     }
 }
 
@@ -103,7 +133,7 @@ function formatDate(d) {
 }
 
 function updateTriviaCrackUserId(callback) {
-    let dbOpenRequest = window.indexedDB.open("Preguntados", 1);
+    let dbOpenRequest = window.indexedDB.open("localforage", 2);
 
     dbOpenRequest.onerror = console.log;
 
