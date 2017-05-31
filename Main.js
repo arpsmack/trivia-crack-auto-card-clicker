@@ -41,6 +41,14 @@ function checkAndActivateCards() {
         reSetup();
         return;
     }
+    let closeButton = $(".close");
+    if (closeButton.length) {
+        try {
+            closeButton.click();
+        } catch (e) {
+            console.log("Error clicking close button", e);
+        }
+    }
     if (nextActivationDate != null && nextActivationDate.getTime() > Date.now()) {
         tryDisplayNextActivationDate();
         return;
