@@ -10,7 +10,8 @@ function closeTopAd() {
 
 function checkAndActivateCards() {
     $(".gacha-container").find(".gacha-card").each((index, element) => {
-        if ($(element).find(".timer").text() == "Collect") {
+        let timerText = $(element).find(".timer").text();
+        if (!/\d\d:\d\d:\d\d/.test(timerText)) {
             $(element).find("img.svg").trigger("click");
         }
     });
