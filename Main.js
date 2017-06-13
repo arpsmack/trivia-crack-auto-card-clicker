@@ -31,4 +31,8 @@ function displayActivationMessage() {
 
 setInterval(runLoop, 1000);
 setTimeout(displayActivationMessage, 1000);
-setTimeout(location.reload, 60 * 60 * 1000);
+
+// Reload the page in 30 minutes
+// Trivia Crack tries to load so much crap in the background the browser tab runs out of memory and locks up
+// This helps to keep the clicker running reliably
+setTimeout(() => location.reload(), 30 * 60 * 1000);
